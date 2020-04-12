@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"rabbitmq-kafka-connenctor/app/rabbitmq"
+)
 
 func main() {
-	fmt.Println("Test")
+	fmt.Println(rabbitmq.Test())
 }
