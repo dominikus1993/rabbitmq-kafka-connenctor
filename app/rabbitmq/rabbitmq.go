@@ -1,5 +1,10 @@
 package rabbitmq
 
-func Test() string {
-	return "sd"
+type IRabbitMqClient interface {
+	Connect(connStr string)
+	CreateChannel()
+	Close()
+}
+
+type RabbitMqClient struct {
 }
