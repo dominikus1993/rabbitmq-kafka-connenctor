@@ -2,6 +2,7 @@ package rabbitmq
 
 import (
 	"fmt"
+	"rabbitmq-kafka-connenctor/app/bus"
 
 	"github.com/streadway/amqp"
 )
@@ -13,18 +14,20 @@ type RabbitMqMessage struct {
 	Body     []byte
 }
 
-type IRabbitMqClient interface {
-	Close() error
-	Subscribe(exchange, queue, topic string)
-	Publish(exchange, topic string)
+type IRabbitMqSource interface {
+	Handle(chan *bus.EventChannel) error
 }
 
-type rabbitMqClient struct {
+type IRabbitMqSink interface {
+	Consume(chan *bus.EventChannel)
+}
+
+type RabbitMqClient struct {
 	Connection *amqp.Connection
 	Channel    *amqp.Channel
 }
 
-func NewRabbitMqClient(connStr string) (*IRabbitMqClient, error) {
+func NewRabbitMqClient(connStr string) (*RabbitMqClient, error) {
 	conn, err := amqp.Dial(connStr)
 	if err != nil {
 		return nil, err
@@ -33,45 +36,53 @@ func NewRabbitMqClient(connStr string) (*IRabbitMqClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	var client IRabbitMqClient = &rabbitMqClient{Connection: conn, Channel: ch}
-	return &client, nil
+	return &RabbitMqClient{Connection: conn, Channel: ch}, nil
 }
 
-func (client *rabbitMqClient) Close() error {
+func (client *RabbitMqClient) Close() error {
 	err := client.Channel.Close()
 	err = client.Connection.Close()
 	return err
 }
 
-func (client *rabbitMqClient) Subscribe(exchange, queue, topic string) error {
-	err := client.Channel.ExchangeDeclare(
-		exchange, // name
-		"topic",  // type
-		true,     // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
+type RabbitMqSource struct {
+	Client                 *RabbitMqClient
+	Exchange, Queue, Topic string
+}
+
+func NewRabbitMqSource(client *RabbitMqClient, exchange, queue, topic string) (*RabbitMqSource, error) {
+	return &RabbitMqSource{Client: client, Exchange: exchange, Queue: queue, Topic: topic}, nil
+}
+
+func (source *RabbitMqSource) Handle() error {
+	err := source.Client.Channel.ExchangeDeclare(
+		source.Exchange, // name
+		"topic",         // type
+		true,            // durable
+		false,           // auto-deleted
+		false,           // internal
+		false,           // no-wait
+		nil,             // arguments
 	)
 
 	if err != nil {
 		return err
 	}
 
-	q, err := client.Channel.QueueDeclare(
-		exchange+"-"+queue, // name
-		true,               // durable
-		false,              // delete when usused
-		false,              // exclusive
-		false,              // no-wait
-		nil,                // arguments
+	q, err := source.Client.Channel.QueueDeclare(
+		source.Exchange+"-"+source.Queue, // name
+		true,                             // durable
+		false,                            // delete when usused
+		false,                            // exclusive
+		false,                            // no-wait
+		nil,                              // arguments
 	)
 
 	if err != nil {
 		return err
 	}
 
-	err = client.Channel.QueueBind(
+	err = source.Client.Channel.QueueBind(
 		q.Name,   // queue name
 		topic,    // routing key
 		exchange, // exchange
