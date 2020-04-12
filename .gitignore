@@ -1,27 +1,26 @@
 
-# Created by https://www.gitignore.io/api/fsharp,dotnetcore
-# Edit at https://www.gitignore.io/?templates=fsharp,dotnetcore
+# Created by https://www.gitignore.io/api/go
+# Edit at https://www.gitignore.io/?templates=go
 
-### DotnetCore ###
-# .NET Core build folders
-/bin
-/obj
-
-# Common node modules locations
-/node_modules
-/wwwroot/node_modules
-
-
-### fsharp ###
-lib/debug
-lib/release
-Debug
-*.suo
-*.user
-obj
-bin
-/build/
+### Go ###
+# Binaries for programs and plugins
 *.exe
-!.paket/paket.bootstrapper.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
-# End of https://www.gitignore.io/api/fsharp,dotnetcore
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+
+### Go Patch ###
+/vendor/
+/Godeps/
+
+# End of https://www.gitignore.io/api/go
