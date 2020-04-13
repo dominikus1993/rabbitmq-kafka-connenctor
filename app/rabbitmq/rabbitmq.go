@@ -71,7 +71,7 @@ func (source *RabbitMqSource) Handle() (bus.EventChannel, error) {
 	q, err := source.Client.Channel.QueueDeclare(
 		source.Exchange+"-"+source.Queue, // name
 		true,                             // durable
-		false,                            // delete when usused
+		true,                             // delete when usused
 		false,                            // exclusive
 		false,                            // no-wait
 		nil,                              // arguments
