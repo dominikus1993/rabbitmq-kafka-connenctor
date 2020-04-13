@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	client, err := rabbitmq.NewRabbitMqClient("amqp://guest:guest5@rabbitmq:5672/")
+	client, err := rabbitmq.NewRabbitMqClient("amqp://guest:guest@rabbitmq:5672/")
 
 	if err != nil {
 		log.Fatal(err)
