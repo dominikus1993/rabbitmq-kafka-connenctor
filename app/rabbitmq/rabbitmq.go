@@ -114,6 +114,7 @@ func (source *RabbitMqSource) Handle() (bus.EventChannel, error) {
 			evtChan <- &bus.Event{Data: msg.Body, Topic: source.Topic}
 		}
 	}(messages)
+
 	return messages, nil
 }
 
