@@ -57,7 +57,7 @@ func NewRabbitMqSource(client *RabbitMqClient, subscriptions Subscriptions) *Rab
 	return &RabbitMqSource{Client: client, Subscriptions: subscriptions}
 }
 
-func declareSubscriber(channel bus.EventChannel, subscriptions) {
+func (source *RabbitMqSource) Handle() (bus.EventChannel, error) {
 	err := source.Client.Channel.ExchangeDeclare(
 		source.Exchange, // name
 		"topic",         // type
@@ -122,7 +122,7 @@ func declareSubscriber(channel bus.EventChannel, subscriptions) {
 	return messages, nil
 }
 
-func (source *RabbitMqSource) Handle() (bus.EventChannel, error) {
+func declareSubscriber(channel bus.EventChannel) {
 	err := source.Client.Channel.ExchangeDeclare(
 		source.Exchange, // name
 		"topic",         // type
