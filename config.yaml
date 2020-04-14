@@ -14,7 +14,7 @@ rabbitmq-to-kafka:
         exchange: test
       to: 
         topic: test
-    - topic:   test
+    - topic:   test2
       from:
         topic: d.t
         queue: test2
