@@ -26,6 +26,20 @@
           <e p="appsettings.Development.json" t="Include" />
           <e p="appsettings.json" t="Include" />
           <e p="bin" t="ExcludeRecursive" />
+          <e p="Bus" t="Include">
+            <e p="EventData.cs" t="Include" />
+          </e>
+          <e p="Configuration" t="Include">
+            <e p="ServiceConfig.cs" t="Include" />
+          </e>
+          <e p="Connector" t="Include">
+            <e p="KafkaToRabbitMqConnector.cs" t="Include" />
+            <e p="RabbitMqToKafkaConnector.cs" t="Include" />
+          </e>
+          <e p="Kafka" t="Include">
+            <e p="KafkaSink.cs" t="Include" />
+            <e p="KafkaSource.cs" t="Include" />
+          </e>
           <e p="librdkafka" t="Include">
             <e p="x64" t="Include" />
             <e p="x86" t="Include" />
@@ -41,6 +55,10 @@
           <e p="Program.cs" t="Include" />
           <e p="Properties" t="Include">
             <e p="launchSettings.json" t="Include" />
+          </e>
+          <e p="RabbitMq" t="Include">
+            <e p="RabbitMqSink.cs" t="Include" />
+            <e p="RabbitMqSource.cs" t="Include" />
           </e>
           <e p="RabbitMqKafkaConnector.csproj" t="IncludeRecursive" />
           <e p="Worker.cs" t="Include" />
