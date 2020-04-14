@@ -1,0 +1,4 @@
+Akka
+System.Threading.Channels 
+Confluent.Kafka
+RabbitMQ.Client
