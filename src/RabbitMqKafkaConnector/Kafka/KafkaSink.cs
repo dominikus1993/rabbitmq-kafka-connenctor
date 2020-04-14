@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Akka.Actor;
 using Akka.IO;
 using Confluent.Kafka;
 using RabbitMqKafkaConnector.Bus;
-using RabbitMqKafkaConnector.Configuration;
 
 namespace RabbitMqKafkaConnector.Kafka
 {
@@ -21,24 +19,27 @@ namespace RabbitMqKafkaConnector.Kafka
         }
     }
 
-    public class KafkaSink : ReceiveActor
+    public class KafkaSink
     {
         private ProducerConfig _config;
         private IProducer<Null, byte[]> _producer;
+        private Configuration.Router _router;
 
-        public KafkaSink(ProducerConfig config)
+        public KafkaSink(ProducerConfig config, Configuration.Router router)
         {
             _config = config;
+            _router = router;
             _producer = new ProducerBuilder<Null, byte[]>(_config).Build();
-            Ready();
         }
 
-        public void Ready()
+        public async Task Ready(ChannelReader<EventData> channelReader)
         {
-            Receive<PublishKafkaEvent>(msg =>
+            await foreach (var msg in channelReader.ReadAllAsync())
             {
-                _producer.Produce(msg.Topic, new Message<Null, byte[]>() {Value = msg.Body.ToArray()});
-            });
+                var cfg = _router.GetKafkaConfig(msg.Topic);
+                await _producer.ProduceAsync(cfg.TopicWithEnv, new Message<Null, byte[]>() {Value = msg.Body.ToArray()});
+                Console.WriteLine("Produced");
+            }
         }
     }
 }

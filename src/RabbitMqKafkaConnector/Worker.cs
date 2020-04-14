@@ -25,21 +25,21 @@ namespace RabbitMqKafkaConnector
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var connector = new RabbitMqToKafkaConnector(new ConnectionFactory() {HostName = "localhost"},
-                new ProducerConfig {BootstrapServers = "localhost:9092"});
+                new ProducerConfig {BootstrapServers = "localhost:9092"},
+                new ServiceConfig()
+                {
+                    RabbitMqSubscriptions = new[]
+                    {
+                        new RabbitMqSubscription()
+                        {
+                            From = new RabbitmqConfig() {Exchange = "Test", Queue = "test", Topic = "d.p"},
+                            To = new KafkaConfig() {Topic = "test"},
+                            Topic = "test"
+                        },
+                    }
+                });
 
-            await connector.Connect(new[]
-            {
-                new Subscription()
-                {
-                    Kafka = new KafkaSubscription() {Topic = "test"},
-                    RabbitMq = new RabbitmqSubscription() {Exchange = "Test", Queue = "test", Topic = "d.test"}
-                },
-                new Subscription()
-                {
-                    Kafka = new KafkaSubscription() {Topic = "test2"},
-                    RabbitMq = new RabbitmqSubscription() {Exchange = "Test2", Queue = "test2", Topic = "d.test.2"}
-                },
-            });
+            await connector.Connect();
         }
     }
 }

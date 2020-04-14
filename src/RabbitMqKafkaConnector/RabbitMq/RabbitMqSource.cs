@@ -13,42 +13,31 @@ using RabbitMqKafkaConnector.Configuration;
 
 namespace RabbitMqKafkaConnector.RabbitMq
 {
-    public class RabbitMqSource : BackgroundService
+    public class RabbitMqSource
     {
-        private readonly ActorSystem _system;
         private readonly RabbitMqSubscription[] _rabbitMqSubscriptions;
         private IModel _channel;
-        private Channel<EventData> _eventDataChannel;
 
-        public RabbitMqSource(IConnection connection, ActorSystem system, RabbitMqSubscription[] rabbitMqSubscriptions)
+        public RabbitMqSource(IConnection connection, RabbitMqSubscription[] rabbitMqSubscriptions)
         {
-            _system = system;
             _rabbitMqSubscriptions = rabbitMqSubscriptions;
-            _eventDataChannel = Channel.CreateUnbounded<EventData>();
             _channel = connection.CreateModel();
         }
         
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public Channel<EventData> Start()
         {
-            var kafkaActor = _system.ActorSelection("/user/kafka");
-            Subscribe();
-            await foreach (var msg in _eventDataChannel.Reader.ReadAllAsync(stoppingToken))
-            {
-                kafkaActor.Tell(msg);
-            }
-        }
-
-        private void Subscribe()
-        {
+            var channel = Channel.CreateUnbounded<EventData>();
+            
             foreach (var subscription in _rabbitMqSubscriptions)
             {
-                CreateSubscription(subscription.Topic, subscription.From);
+                CreateSubscription(subscription.Topic, subscription.From, channel.Writer);
             }
+
+            return channel;
         }
         
-
-        private void CreateSubscription(string topic, RabbitmqConfig config)
+        private void CreateSubscription(string topic, RabbitmqConfig config, ChannelWriter<EventData> writer)
         {
 
             _channel.ExchangeDeclare(exchange:config.Exchange, type: "topic");
@@ -64,7 +53,7 @@ namespace RabbitMqKafkaConnector.RabbitMq
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (model, ea) =>
             {
-                _eventDataChannel.Writer.TryWrite(new EventData(topic, ByteString.FromBytes(ea.Body)));
+                writer.TryWrite(new EventData(topic, ByteString.FromBytes(ea.Body)));
             };
             
             _channel.BasicConsume(queue: queueName,
