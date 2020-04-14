@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
 using System.Threading.Channels;
+using System.Threading.Tasks;
+using Akka.Actor;
 using Akka.IO;
+using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMqKafkaConnector.Bus;
@@ -9,45 +13,63 @@ using RabbitMqKafkaConnector.Configuration;
 
 namespace RabbitMqKafkaConnector.RabbitMq
 {
-    public class RabbitMqSource
+    public class RabbitMqSource : BackgroundService
     {
+        private readonly ActorSystem _system;
+        private readonly RabbitMqSubscription[] _rabbitMqSubscriptions;
         private IModel _channel;
-        
-        public RabbitMqSource(IConnection connection)
+        private Channel<EventData> _eventDataChannel;
+
+        public RabbitMqSource(IConnection connection, ActorSystem system, RabbitMqSubscription[] rabbitMqSubscriptions)
         {
+            _system = system;
+            _rabbitMqSubscriptions = rabbitMqSubscriptions;
+            _eventDataChannel = Channel.CreateUnbounded<EventData>();
             _channel = connection.CreateModel();
         }
+        
 
-        public Channel<EventData> StartHandling(RabbitmqSubscription subscription)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var eventChannel = Channel.CreateUnbounded<EventData>();
+            var kafkaActor = _system.ActorSelection("/user/kafka");
+            Subscribe();
+            await foreach (var msg in _eventDataChannel.Reader.ReadAllAsync(stoppingToken))
+            {
+                kafkaActor.Tell(msg);
+            }
+        }
 
-            _channel.ExchangeDeclare(exchange:subscription.Exchange, type: "topic");
-            var queueName = $"{subscription.Exchange}-{subscription.Queue}";
+        private void Subscribe()
+        {
+            foreach (var subscription in _rabbitMqSubscriptions)
+            {
+                CreateSubscription(subscription.Topic, subscription.From);
+            }
+        }
+        
+
+        private void CreateSubscription(string topic, RabbitmqConfig config)
+        {
+
+            _channel.ExchangeDeclare(exchange:config.Exchange, type: "topic");
+            var queueName = $"{config.Exchange}-{config.Queue}";
 
 
             var q = _channel.QueueDeclare(queueName, true);
             _channel.QueueBind(queue: q.QueueName,
-                exchange: subscription.Exchange,
-                routingKey: subscription.Topic);
+                exchange: config.Exchange,
+                routingKey: config.Topic);
 
 
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (model, ea) =>
             {
-                eventChannel.Writer.TryWrite(new EventData(ea.RoutingKey, ByteString.FromBytes(ea.Body)));
-            };
-            consumer.Shutdown += (sender, args) =>
-            {
-                eventChannel.Writer.Complete();
+                _eventDataChannel.Writer.TryWrite(new EventData(topic, ByteString.FromBytes(ea.Body)));
             };
             
             _channel.BasicConsume(queue: queueName,
                 autoAck: true,
                 consumer: consumer);
-
-            return eventChannel;
         }
-        
     }
 }

@@ -27,7 +27,6 @@ namespace RabbitMqKafkaConnector.Connector
             var channel = Channel.CreateUnbounded<EventData>();
             var source = new KafkaSource(_consumerConfig, channel);
             
-            var subscriptions = ch
             await source.StartHandling(subscriptions);
         }
 

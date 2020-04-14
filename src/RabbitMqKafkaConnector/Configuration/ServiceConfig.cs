@@ -1,29 +1,36 @@
 ﻿namespace RabbitMqKafkaConnector.Configuration
 {
-    public class KafkaSubscription
+    public class KafkaConfig
     {
-        private static string EnvName = (System.Environment.GetEnvironmentVariable("ENV") ?? "PROD").ToLower();
+        public static string EnvName = (System.Environment.GetEnvironmentVariable("ENV") ?? "PROD").ToLower();
         public string Topic { get; set; }
 
         public string TopicWithEnv => $"{EnvName}.{Topic}";
     } 
-    public class RabbitmqSubscription
+    public class RabbitmqConfig
     {
         public string Topic { get; set; }
         public string Exchange { get; set; }
         public string Queue { get; set; }
     }  
     
-    public class Subscription
+    public class KafkaSubscription
     {
         public string Topic { get; set; }
-        public KafkaSubscription Kafka { get; set; }
-        public RabbitmqSubscription RabbitMq { get; set; }
+        public KafkaConfig From { get; set; }
+        public RabbitmqConfig To { get; set; }
+    }
+    
+    public class RabbitMqSubscription
+    {
+        public string Topic { get; set; }
+        public KafkaConfig To { get; set; }
+        public RabbitmqConfig From { get; set; }
     }
 
     public class ServiceConfig
     {
-        public Subscription[] KafkaSubscriptions { get; set; }
-        public Subscription[] RabbitMqSubscriptions { get; set; }
+        public KafkaSubscription[] KafkaSubscriptions { get; set; }
+        public RabbitMqSubscription[] RabbitMqSubscriptions { get; set; }
     }
 }
