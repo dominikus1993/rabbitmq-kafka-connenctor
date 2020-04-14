@@ -6,10 +6,14 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type RabbitMqMessage struct {
+type Topic string
+
+type Subscriptions map[Topic]RabbitMqSubscription
+
+type RabbitMqSubscription struct {
 	Exchange string
 	Queue    string
-	Topic    string
+	Route    string
 	Body     []byte
 }
 
@@ -45,12 +49,77 @@ func (client *RabbitMqClient) Close() error {
 }
 
 type RabbitMqSource struct {
-	Client                 *RabbitMqClient
-	Exchange, Queue, Topic string
+	Client        *RabbitMqClient
+	Subscriptions Subscriptions
 }
 
-func NewRabbitMqSource(client *RabbitMqClient, exchange, queue, topic string) (*RabbitMqSource, error) {
-	return &RabbitMqSource{Client: client, Exchange: exchange, Queue: queue, Topic: topic}, nil
+func NewRabbitMqSource(client *RabbitMqClient, subscriptions Subscriptions) *RabbitMqSource {
+	return &RabbitMqSource{Client: client, Subscriptions: subscriptions}
+}
+
+func declareSubscriber(channel bus.EventChannel, subscriptions) {
+	err := source.Client.Channel.ExchangeDeclare(
+		source.Exchange, // name
+		"topic",         // type
+		true,            // durable
+		false,           // auto-deleted
+		false,           // internal
+		false,           // no-wait
+		nil,             // arguments
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q, err := source.Client.Channel.QueueDeclare(
+		source.Exchange+"-"+source.Queue, // name
+		true,                             // durable
+		true,                             // delete when usused
+		false,                            // exclusive
+		false,                            // no-wait
+		nil,                              // arguments
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = source.Client.Channel.QueueBind(
+		q.Name,          // queue name
+		source.Topic,    // routing key
+		source.Exchange, // exchange
+		false,
+		nil,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	msgs, err := source.Client.Channel.Consume(
+		q.Name,                           // queue
+		source.Exchange+"-"+source.Queue, // consumer
+		true,                             // auto-ack
+		false,                            // exclusive
+		false,                            // no-local
+		false,                            // no-wait
+		nil,                              // args
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	messages := make(chan *bus.Event)
+
+	go func(evtChan bus.EventChannel) {
+		for msg := range msgs {
+			evtChan <- &bus.Event{Data: msg.Body, Topic: source.Topic}
+		}
+	}(messages)
+
+	return messages, nil
 }
 
 func (source *RabbitMqSource) Handle() (bus.EventChannel, error) {
@@ -128,7 +197,6 @@ func NewRabbitMqSink(client *RabbitMqClient, exchange string) (*RabbitMqSink, er
 }
 
 func (source *RabbitMqSink) Handle(messages bus.EventChannel) {
-
 	for msg := range messages {
 		source.Client.Channel.ExchangeDeclare(
 			source.Exchange, // name

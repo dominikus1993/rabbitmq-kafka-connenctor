@@ -6,5 +6,3 @@ type Event struct {
 }
 
 type EventChannel chan *Event
-
-type EventChannelSlice []EventChannel
