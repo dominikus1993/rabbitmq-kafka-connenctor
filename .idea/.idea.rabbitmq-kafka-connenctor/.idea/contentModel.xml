@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="\rust_expanded_macros\jjr3f5sk" t="IncludeRecursive" />
+    <e p="\rust_expanded_macros\1kg4g1ok" t="IncludeRecursive" />
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x64\native\librdkafka.dll" t="Include" />
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x64\native\librdkafkacpp.dll" t="Include" />
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x64\native\libzstd.dll" t="Include" />
@@ -32,9 +32,8 @@
           <e p="Configuration" t="Include">
             <e p="ServiceConfig.cs" t="Include" />
           </e>
-          <e p="Connector" t="Include">
-            <e p="KafkaToRabbitMqConnector.cs" t="Include" />
-            <e p="RabbitMqToKafkaConnector.cs" t="Include" />
+          <e p="extensions" t="Include">
+            <e p="StringExtensions.cs" t="Include" />
           </e>
           <e p="Kafka" t="Include">
             <e p="KafkaSink.cs" t="Include" />
@@ -61,10 +60,6 @@
             <e p="RabbitMqSource.cs" t="Include" />
           </e>
           <e p="RabbitMqKafkaConnector.csproj" t="IncludeRecursive" />
-          <e p="Router" t="Include">
-            <e p="MessageToRabbitMqRouter.cs" t="Include" />
-          </e>
-          <e p="Worker.cs" t="Include" />
         </e>
       </e>
     </e>

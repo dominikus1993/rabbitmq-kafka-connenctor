@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Akka.Actor;
+using Akka.Event;
 using Akka.IO;
 using Confluent.Kafka;
 using RabbitMqKafkaConnector.Bus;
 
 namespace RabbitMqKafkaConnector.Kafka
 {
-    public class PublishKafkaEvent
+    public class PublishKafkaEvent 
     {
         public string Topic { get; }
         public ByteString Body { get; }
@@ -19,27 +21,37 @@ namespace RabbitMqKafkaConnector.Kafka
         }
     }
 
-    public class KafkaSink
+    public class KafkaSink : ReceiveActor
     {
-        private ProducerConfig _config;
-        private IProducer<Null, byte[]> _producer;
-        private Configuration.Router _router;
+        private readonly ProducerConfig _config;
+        private readonly IProducer<Null, byte[]> _producer;
+        private readonly Configuration.Router _router;
 
         public KafkaSink(ProducerConfig config, Configuration.Router router)
         {
             _config = config;
             _router = router;
             _producer = new ProducerBuilder<Null, byte[]>(_config).Build();
+            Ready();
         }
 
-        public async Task Ready(ChannelReader<EventData> channelReader)
+        public void Ready()
         {
-            await foreach (var msg in channelReader.ReadAllAsync())
+            Receive<EventData>(msg =>
             {
                 var cfg = _router.GetKafkaConfig(msg.Topic);
-                await _producer.ProduceAsync(cfg.TopicWithEnv, new Message<Null, byte[]>() {Value = msg.Body.ToArray()});
-                Console.WriteLine("Produced");
-            }
+                _producer.Produce(cfg.TopicWithEnv, new Message<Null, byte[]>() {Value = msg.Body.ToArray()}, report => Self.Tell(report) );
+            });
+
+            Receive<DeliveryReport<Null, byte[]>>(msg =>
+            {
+                Context.GetLogger().Error(msg.Error.Reason);
+            }, x => x.Error.IsError);
+            
+            Receive<DeliveryReport<Null, byte[]>>(msg =>
+            {
+                Context.GetLogger().Info("Dostarczyłem");
+            }, x => !x.Error.IsError);
         }
     }
 }

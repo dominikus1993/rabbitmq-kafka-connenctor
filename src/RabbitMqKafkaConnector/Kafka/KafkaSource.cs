@@ -8,8 +8,11 @@ using Akka.Actor;
 using Akka.IO;
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMqKafkaConnector.Bus;
 using RabbitMqKafkaConnector.Configuration;
+using RabbitMqKafkaConnector.Extensions;
 
 namespace RabbitMqKafkaConnector.Kafka
 {
@@ -19,13 +22,13 @@ namespace RabbitMqKafkaConnector.Kafka
         private readonly ActorSystem _system;
         private readonly ConsumerConfig _consumerConfig;
         private readonly KafkaSubscription[] _kafkaSubscriptions;
-        private Channel<EventData> _eventDataChannel;
-        public KafkaSource(ActorSystem system, ConsumerConfig consumerConfig, KafkaSubscription[] kafkaSubscriptions)
+        private ILogger<KafkaSource> _logger;
+        public KafkaSource(ActorSystem system, ConsumerConfig consumerConfig, IOptions<ServiceConfig> options, ILogger<KafkaSource> logger)
         {
             _system = system;
             _consumerConfig = consumerConfig;
-            _kafkaSubscriptions = kafkaSubscriptions;
-            _eventDataChannel = Channel.CreateUnbounded<EventData>();
+            _kafkaSubscriptions = options.Value.KafkaSubscriptions;
+            _logger = logger;
         }
 
 
@@ -46,21 +49,23 @@ namespace RabbitMqKafkaConnector.Kafka
                     Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
                 })
                 .Build();
+            
             consumer.Subscribe(_kafkaSubscriptions.Select(x => x.From.TopicWithEnv).ToArray());
             try
             {
+                var prefixToBeTrimed = $"{KafkaConfig.EnvName}.";
                 await Task.Yield();
                 while (true)
                 {
                     try
                     {
                         var cr = consumer.Consume(stoppingToken);
-                        rabbitMq.Tell(new EventData(cr.Topic.(KafkaConfig.EnvName), ByteString.FromBytes(cr.Message.Value)));
+                        rabbitMq.Tell(new EventData(cr.Topic.TrimPrefix(prefixToBeTrimed), ByteString.FromBytes(cr.Message.Value)));
                         Console.WriteLine($"Consumed message '{cr.Message.Key}' at: '{cr.TopicPartitionOffset}'.");
                     }
                     catch (ConsumeException e)
                     {
-                        Console.WriteLine($"Error occured: {e.Error.Reason}");
+                       _logger.LogError(e, $"Error occured: {e.Error.Reason}");
                     }
                 }
             }

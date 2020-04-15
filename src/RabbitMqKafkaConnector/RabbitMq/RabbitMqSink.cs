@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.IO;
 using RabbitMQ.Client;
+using RabbitMqKafkaConnector.Bus;
 
 namespace RabbitMqKafkaConnector.RabbitMq
 {
@@ -26,10 +27,12 @@ namespace RabbitMqKafkaConnector.RabbitMq
     {
         private IModel _channel;
         private IConnection _connection;
+        private readonly Configuration.Router _router;
 
-        public RabbitMqSink(IConnection connection)
+        public RabbitMqSink(IConnection connection, Configuration.Router router)
         {
             _connection = connection;
+            _router = router;
             _channel = connection.CreateModel();
             Ready();
         }
@@ -37,12 +40,13 @@ namespace RabbitMqKafkaConnector.RabbitMq
 
         public void Ready()
         {
-            Receive<PublishRabbitMqEvent>(msg =>
+            Receive<EventData>(msg =>
             {
-                _channel.ExchangeDeclare(exchange: msg.Exchange,
+                var rabbit = _router.GetRabbitConfig(msg.Topic);
+                _channel.ExchangeDeclare(exchange: rabbit.Exchange,
                     type: "topic");
                 _channel.BasicPublish(exchange: "topic_logs",
-                    routingKey: msg.Exchange,
+                    routingKey: rabbit.Exchange,
                     basicProperties: null,
                     body: msg.Body.ToArray());
             });

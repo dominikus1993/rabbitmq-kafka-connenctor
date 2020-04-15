@@ -64,5 +64,10 @@ namespace RabbitMqKafkaConnector.Configuration
         {
             return _kafkaSinkRouting.TryGetValue(topic, out var cfg) ? cfg : null;
         }
+
+        public RabbitmqConfig? GetRabbitConfig(string topic)
+        {
+            return _rabbitmqSinkRouting.TryGetValue(topic, out var cfg) ? cfg : null;
+        }
     }
 }

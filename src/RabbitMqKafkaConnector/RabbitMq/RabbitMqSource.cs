@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.IO;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMqKafkaConnector.Bus;
@@ -13,34 +14,24 @@ using RabbitMqKafkaConnector.Configuration;
 
 namespace RabbitMqKafkaConnector.RabbitMq
 {
-    public class RabbitMqSource
+    public class RabbitMqSource : BackgroundService
+
     {
         private readonly RabbitMqSubscription[] _rabbitMqSubscriptions;
         private IModel _channel;
+        private ActorSystem _actorSystem;
 
-        public RabbitMqSource(IConnection connection, RabbitMqSubscription[] rabbitMqSubscriptions)
+        public RabbitMqSource(IConnection connection, IOptions<ServiceConfig> config,
+            ActorSystem actorSystem)
         {
-            _rabbitMqSubscriptions = rabbitMqSubscriptions;
+            _rabbitMqSubscriptions = config.Value.RabbitMqSubscriptions;
+            _actorSystem = actorSystem;
             _channel = connection.CreateModel();
         }
-        
 
-        public Channel<EventData> Start()
+        private void CreateSubscription(string topic, RabbitmqConfig config, ActorSelection actor)
         {
-            var channel = Channel.CreateUnbounded<EventData>();
-            
-            foreach (var subscription in _rabbitMqSubscriptions)
-            {
-                CreateSubscription(subscription.Topic, subscription.From, channel.Writer);
-            }
-
-            return channel;
-        }
-        
-        private void CreateSubscription(string topic, RabbitmqConfig config, ChannelWriter<EventData> writer)
-        {
-
-            _channel.ExchangeDeclare(exchange:config.Exchange, type: "topic");
+            _channel.ExchangeDeclare(exchange: config.Exchange, type: "topic");
             var queueName = $"{config.Exchange}-{config.Queue}";
 
 
@@ -51,14 +42,22 @@ namespace RabbitMqKafkaConnector.RabbitMq
 
 
             var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (model, ea) =>
-            {
-                writer.TryWrite(new EventData(topic, ByteString.FromBytes(ea.Body)));
-            };
-            
+            consumer.Received += (_, ea) => actor.Tell(new EventData(topic, ByteString.FromBytes(ea.Body)));
             _channel.BasicConsume(queue: queueName,
                 autoAck: true,
                 consumer: consumer);
+        }
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            var kafka = _actorSystem.ActorSelection("/user/kafka");
+
+            foreach (var subscription in _rabbitMqSubscriptions)
+            {
+                CreateSubscription(subscription.Topic, subscription.From, kafka);
+            }
+
+            await Task.Yield();
         }
     }
 }
