@@ -1,8 +1,10 @@
 package rkafka
 
 import (
+	"fmt"
+	"rabbitmq-kafka-connenctor/app/bus"
 	"rabbitmq-kafka-connenctor/app/config"
-	"rossmannpl-backend-kafka-producer/app/infrastructure/env"
+	"rabbitmq-kafka-connenctor/app/env"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
@@ -14,11 +16,15 @@ type KafkaProducer struct {
 }
 
 func GetKafkaServers() string {
-	return env.GetEnvOrDefault("KAFKA_SERVERS", "localhost:9092")
+	return env.GetEnvOrDefault("KAFKA_SERVERS", "kafka:9092")
+}
+
+func GetKafkaProducerConfig() *kafka.ConfigMap {
+	return &kafka.ConfigMap{"bootstrap.servers": GetKafkaServers()}
 }
 
 func NewKafkaProducer(cfg *kafka.ConfigMap) *KafkaProducer {
-	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": GetKafkaServers()})
+	p, err := kafka.NewProducer(cfg)
 
 	env.FailOnError(err, "Failed to connect to kafka")
 	return &KafkaProducer{Producer: p}
@@ -31,11 +37,22 @@ func (producer *KafkaProducer) Close() {
 
 type KafkaSink struct {
 	Client *KafkaProducer
-	Router config.MessageRouter
+	Router *config.MessageRouter
 }
 
-func NewKafkaSink(client *KafkaProducer, router config.MessageRouter) *KafkaSink {
+func NewKafkaSink(client *KafkaProducer, router *config.MessageRouter) *KafkaSink {
 	return &KafkaSink{Client: client, Router: router}
+}
+
+func (sink *KafkaSink) Start(messages bus.EventChannel) {
+	for msg := range messages {
+		topic := sink.Router.GetKafkaRouting(msg.Topic)
+		fmt.Println(topic)
+		sink.Client.Producer.ProduceChannel() <- &kafka.Message{
+			TopicPartition: kafka.TopicPartition{Topic: &topic.Topic, Partition: int32(kafka.PartitionAny)},
+			Value:          msg.Data,
+		}
+	}
 }
 
 func getKafkaGroupID() string {
