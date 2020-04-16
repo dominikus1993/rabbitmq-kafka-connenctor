@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using Akka.IO;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Framing;
 using RabbitMqKafkaConnector.Bus;
 
 namespace RabbitMqKafkaConnector.RabbitMq
@@ -44,9 +45,9 @@ namespace RabbitMqKafkaConnector.RabbitMq
             {
                 var rabbit = _router.GetRabbitConfig(msg.Topic);
                 _channel.ExchangeDeclare(exchange: rabbit.Exchange,
-                    type: "topic");
-                _channel.BasicPublish(exchange: "topic_logs",
-                    routingKey: rabbit.Exchange,
+                    type: "topic", true);
+                _channel.BasicPublish(exchange: rabbit.Exchange,
+                    routingKey: rabbit.Topic,
                     basicProperties: null,
                     body: msg.Body.ToArray());
             });

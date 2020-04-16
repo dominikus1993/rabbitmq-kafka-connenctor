@@ -31,11 +31,10 @@ namespace RabbitMqKafkaConnector.RabbitMq
 
         private void CreateSubscription(string topic, RabbitmqConfig config, ActorSelection actor)
         {
-            _channel.ExchangeDeclare(exchange: config.Exchange, type: "topic");
+            _channel.ExchangeDeclare(exchange: config.Exchange, type: "topic", true, false);
             var queueName = $"{config.Exchange}-{config.Queue}";
-
-
-            var q = _channel.QueueDeclare(queueName, true);
+            
+            var q = _channel.QueueDeclare(queueName, true, false, false);
             _channel.QueueBind(queue: q.QueueName,
                 exchange: config.Exchange,
                 routingKey: config.Topic);
