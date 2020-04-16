@@ -130,26 +130,27 @@ func (source *RabbitMqSource) declareSubscriber(topic string, cfg config.RabbitM
 }
 
 type RabbitMqSink struct {
-	Client   *RabbitMqClient
-	Exchange string
+	Client *RabbitMqClient
+	Router *config.MessageRouter
 }
 
-func NewRabbitMqSink(client *RabbitMqClient, exchange string) (*RabbitMqSink, error) {
-	return &RabbitMqSink{Client: client, Exchange: exchange}, nil
+func NewRabbitMqSink(client *RabbitMqClient, router *config.MessageRouter) (*RabbitMqSink, error) {
+	return &RabbitMqSink{Client: client, Router: router}, nil
 }
 
 func (source *RabbitMqSink) Handle(messages bus.EventChannel) {
 	for msg := range messages {
+		r := source.Router.GetRabbitRouting(msg.Topic)
 		source.Client.Channel.ExchangeDeclare(
-			source.Exchange, // name
-			"topic",         // type
-			true,            // durable
-			false,           // auto-deleted
-			false,           // internal
-			false,           // no-wait
-			nil,             // arguments
+			r.Exchange, // name
+			"topic",    // type
+			true,       // durable
+			false,      // auto-deleted
+			false,      // internal
+			false,      // no-wait
+			nil,        // arguments
 		)
 
-		source.Client.Channel.Publish(source.Exchange, msg.Topic, false, false, amqp.Publishing{ContentType: "application/json", Body: msg.Data})
+		source.Client.Channel.Publish(r.Exchange, r.Topic, false, false, amqp.Publishing{ContentType: "application/json", Body: msg.Data})
 	}
 }

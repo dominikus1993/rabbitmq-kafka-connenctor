@@ -2,9 +2,11 @@ package rkafka
 
 import (
 	"fmt"
+	"log"
 	"rabbitmq-kafka-connenctor/app/bus"
 	"rabbitmq-kafka-connenctor/app/config"
 	"rabbitmq-kafka-connenctor/app/env"
+	"strings"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
@@ -63,15 +65,48 @@ type KafkaConsumer struct {
 	Consumer *kafka.Consumer
 }
 
-func NewConsumer() *KafkaConsumer {
-	config := &kafka.ConfigMap{"bootstrap.servers": GetKafkaServers(),
+func GetKafkaConsumerConfig() *kafka.ConfigMap {
+	return &kafka.ConfigMap{"bootstrap.servers": GetKafkaServers(),
 		"client.id": getKafkaGroupID(),
 		"group.id":  getKafkaGroupID()}
+}
+
+func NewConsumer(config *kafka.ConfigMap) *KafkaConsumer {
 
 	c, err := kafka.NewConsumer(config)
 
 	env.FailOnError(err, "Error when trying declare a kafka consumer")
 	return &KafkaConsumer{Consumer: c}
+}
+
+type KafkaSource struct {
+	Client *KafkaConsumer
+}
+
+func NewKafkaSource(client *KafkaConsumer, router *config.MessageRouter) *KafkaSource {
+	return &KafkaSource{Client: client}
+}
+
+func getTopicNameWithoutEnv(topic, envName string) string {
+	return strings.TrimPrefix(topic, fmt.Sprintf("%s.", envName))
+}
+
+func (source *KafkaSource) Start(topics []string) chan *bus.Event {
+	consumer := source.Client.Consumer
+	messages := make(chan *bus.Event)
+	go func(channel bus.EventChannel) {
+		consumer.SubscribeTopics(topics, nil)
+		for {
+			msg, err := consumer.ReadMessage(-1)
+			if err == nil {
+				channel <- &bus.Event{Topic: *msg.TopicPartition.Topic, Data: msg.Value}
+			} else {
+				// The client will automatically try to recover from all errors.
+				log.Printf("Consumer error: %v (%v)\n", err, msg)
+			}
+		}
+	}(messages)
+	return messages
 }
 
 func CloseKafka(consumer *kafka.Consumer) {

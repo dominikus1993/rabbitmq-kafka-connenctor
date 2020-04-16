@@ -83,3 +83,7 @@ func NewMessageRouter(cfg Config) *MessageRouter {
 func (r *MessageRouter) GetKafkaRouting(topic string) Kafka {
 	return r.KafkaSinkRouting[topic]
 }
+
+func (r *MessageRouter) GetRabbitRouting(topic string) RabbitMq {
+	return r.RabbitMqSinkRouting[topic]
+}

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2a6c90eb-22ba-4dcb-b4e1-230c1230a3e7" name="Default Changelist" comment="add dockerfile" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/C33AFD71-6EE0-4892-B8AD-69B81D88AE1C/1E0/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Router/MessageToRabbitMqRouter.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Extensions/StringExtensions.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/akka.hocon" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/RabbitMqKafkaConnector.csproj" />
+        <option value="$PROJECT_DIR$/paket.dependencies" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/paket.references" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Infrastructire/Logging.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Configuration/SerilogOptions.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Configuration/SeqOptions.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/appsettings.json" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Program.cs" />
+        <option value="$PROJECT_DIR$/docker-compose.yml" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Dockerfile" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Kafka/KafkaSink.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Kafka/KafkaSource.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Bus/Error.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Configuration/ServiceConfig.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/Infrastructure/Logging.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/RabbitMq/RabbitMqSource.cs" />
+        <option value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/RabbitMq/RabbitMqSink.cs" />
+      </list>
+    </option>
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="1kg4g1ok" />
+  </component>
+  <component name="ProjectId" id="1aafAYTS9j15a6QpAxyJh6eoShT" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="Rider.SolutionExplorerActivator" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="TWShift.3" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="editorconfig.notification" value="utf-8-bom" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="CodeLensConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="RabbitMqKafkaConnector" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
+      <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/src/RabbitMqKafkaConnector/RabbitMqKafkaConnector.csproj" />
+      <option name="LAUNCH_PROFILE_TFM" value=".NETCoreApp,Version=v3.1" />
+      <option name="LAUNCH_PROFILE_NAME" value="RabbitMqKafkaConnector" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="GENERATE_APPLICATIONHOST_CONFIG" value="1" />
+      <option name="SHOW_IIS_EXPRESS_OUTPUT" value="0" />
+      <option name="SEND_DEBUG_REQUEST" value="1" />
+      <option name="ADDITIONAL_IIS_EXPRESS_ARGUMENTS" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2a6c90eb-22ba-4dcb-b4e1-230c1230a3e7" name="Default Changelist" comment="" />
+      <created>1586978482893</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1586978482893</updated>
+      <workItem from="1586978484529" duration="2653000" />
+      <workItem from="1587018607265" duration="14293000" />
+      <workItem from="1587045906836" duration="746000" />
+      <workItem from="1587046701671" duration="605000" />
+      <workItem from="1587060807791" duration="1195000" />
+    </task>
+    <task id="LOCAL-00001" summary="kafka">
+      <created>1587021552068</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1587021552068</updated>
+    </task>
+    <task id="LOCAL-00002" summary="small changes">
+      <created>1587021794541</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1587021794541</updated>
+    </task>
+    <task id="LOCAL-00003" summary="add akka">
+      <created>1587023827504</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1587023827504</updated>
+    </task>
+    <task id="LOCAL-00004" summary="add actors">
+      <created>1587037432599</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1587037432599</updated>
+    </task>
+    <task id="LOCAL-00005" summary="add dockerfile">
+      <created>1587046417283</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1587046417283</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="kafka" />
+    <MESSAGE value="small changes" />
+    <MESSAGE value="add akka" />
+    <MESSAGE value="add actors" />
+    <MESSAGE value="add dockerfile" />
+    <option name="LAST_COMMIT_MESSAGE" value="add dockerfile" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="714" y="310" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1587033435183">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="714" y="310" key="#com.intellij.fileTypes.FileTypeChooser/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587033435183" />
+    <state width="404" height="646" key="DebuggerActiveHint" timestamp="1587021324664">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="404" height="646" key="DebuggerActiveHint/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587021324664" />
+    <state width="1877" height="274" key="GridCell.Tab.0.bottom" timestamp="1587047251768">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="274" key="GridCell.Tab.0.bottom/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587047251768" />
+    <state width="1877" height="274" key="GridCell.Tab.0.center" timestamp="1587047251768">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="274" key="GridCell.Tab.0.center/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587047251768" />
+    <state width="1877" height="274" key="GridCell.Tab.0.left" timestamp="1587047251768">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="274" key="GridCell.Tab.0.left/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587047251768" />
+    <state width="1877" height="274" key="GridCell.Tab.0.right" timestamp="1587047251768">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="274" key="GridCell.Tab.0.right/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587047251768" />
+    <state width="1875" height="325" key="GridCell.Tab.1.bottom" timestamp="1587044675199">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.1.bottom/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675199" />
+    <state width="1875" height="325" key="GridCell.Tab.1.center" timestamp="1587044675199">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.1.center/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675199" />
+    <state width="1875" height="325" key="GridCell.Tab.1.left" timestamp="1587044675199">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.1.left/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675199" />
+    <state width="1875" height="325" key="GridCell.Tab.1.right" timestamp="1587044675199">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.1.right/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675199" />
+    <state width="1875" height="325" key="GridCell.Tab.2.bottom" timestamp="1587044675199">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.2.bottom/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675199" />
+    <state width="1875" height="325" key="GridCell.Tab.2.center" timestamp="1587044675199">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.2.center/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675199" />
+    <state width="1875" height="325" key="GridCell.Tab.2.left" timestamp="1587044675199">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.2.left/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675199" />
+    <state width="1875" height="325" key="GridCell.Tab.2.right" timestamp="1587044675199">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.2.right/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675199" />
+    <state width="1875" height="325" key="GridCell.Tab.3.bottom" timestamp="1587044675201">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.3.bottom/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675201" />
+    <state width="1875" height="325" key="GridCell.Tab.3.center" timestamp="1587044675201">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.3.center/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675201" />
+    <state width="1875" height="325" key="GridCell.Tab.3.left" timestamp="1587044675200">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.3.left/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675200" />
+    <state width="1875" height="325" key="GridCell.Tab.3.right" timestamp="1587044675201">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.3.right/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675201" />
+    <state width="1875" height="325" key="GridCell.Tab.4.bottom" timestamp="1587044675201">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.4.bottom/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675201" />
+    <state width="1875" height="325" key="GridCell.Tab.4.center" timestamp="1587044675201">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.4.center/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675201" />
+    <state width="1875" height="325" key="GridCell.Tab.4.left" timestamp="1587044675201">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.4.left/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675201" />
+    <state width="1875" height="325" key="GridCell.Tab.4.right" timestamp="1587044675201">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1875" height="325" key="GridCell.Tab.4.right/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044675201" />
+    <state x="739" y="153" key="RiderGenerateDialog" timestamp="1587037147481">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="739" y="153" key="RiderGenerateDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587037147481" />
+    <state x="461" y="165" key="SettingsEditor" timestamp="1587047104952">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="165" key="SettingsEditor/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587047104952" />
+    <state x="552" y="234" key="Vcs.Push.Dialog.v2" timestamp="1587062876807">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="234" key="Vcs.Push.Dialog.v2/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587062876807" />
+    <state x="-1920" y="0" width="1550" height="880" key="dock-window-1" timestamp="1587038503315">
+      <screen x="-1920" y="0" width="1536" height="832" />
+    </state>
+    <state x="-1920" y="0" width="1550" height="880" key="dock-window-1/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587038503315" />
+    <state x="623" y="236" width="673" height="568" key="find.popup" timestamp="1587044033191">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="236" width="673" height="568" key="find.popup/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587044033191" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1587047038865">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587047038865" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="LaunchSettings">
+        <watch expression="$exception.StackTrace" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
