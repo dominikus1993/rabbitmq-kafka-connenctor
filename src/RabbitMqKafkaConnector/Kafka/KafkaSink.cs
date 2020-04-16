@@ -9,7 +9,7 @@ using RabbitMqKafkaConnector.Bus;
 
 namespace RabbitMqKafkaConnector.Kafka
 {
-    public class PublishKafkaEvent 
+    public class PublishKafkaEvent
     {
         public string Topic { get; }
         public ByteString Body { get; }
@@ -26,12 +26,17 @@ namespace RabbitMqKafkaConnector.Kafka
         private readonly ProducerConfig _config;
         private readonly IProducer<Null, byte[]> _producer;
         private readonly Configuration.Router _router;
+        private ILoggingAdapter _logger;
 
         public KafkaSink(ProducerConfig config, Configuration.Router router)
         {
             _config = config;
             _router = router;
-            _producer = new ProducerBuilder<Null, byte[]>(_config).Build();
+            _logger = Context.GetLogger();
+            _producer = new ProducerBuilder<Null, byte[]>(_config)
+                .SetErrorHandler((_, e) => _logger.Error($"Error: {e.Reason}"))
+                .SetStatisticsHandler((_, json) => _logger.Info($"Statistics: {json}"))
+                .Build();
             Ready();
         }
 
@@ -40,18 +45,15 @@ namespace RabbitMqKafkaConnector.Kafka
             Receive<EventData>(msg =>
             {
                 var cfg = _router.GetKafkaConfig(msg.Topic);
-                _producer.Produce(cfg.TopicWithEnv, new Message<Null, byte[]>() {Value = msg.Body.ToArray()}, report => Self.Tell(report) );
+                _producer.Produce(cfg.TopicWithEnv, new Message<Null, byte[]>() {Value = msg.Body.ToArray()},
+                    report => Self.Tell(report));
             });
 
-            Receive<DeliveryReport<Null, byte[]>>(msg =>
-            {
-                Context.GetLogger().Error(msg.Error.Reason);
-            }, x => x.Error.IsError);
-            
-            Receive<DeliveryReport<Null, byte[]>>(msg =>
-            {
-                Context.GetLogger().Info("Dostarczyłem");
-            }, x => !x.Error.IsError);
+            Receive<DeliveryReport<Null, byte[]>>(msg => { _logger.Error(msg.Error.Reason); },
+                x => x.Error.IsError);
+
+            Receive<DeliveryReport<Null, byte[]>>(msg => { _logger.Info("Dostarczyłem"); },
+                x => !x.Error.IsError);
         }
     }
 }

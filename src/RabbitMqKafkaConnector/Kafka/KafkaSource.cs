@@ -38,15 +38,15 @@ namespace RabbitMqKafkaConnector.Kafka
             var rabbitMq = _system.ActorSelection("/user/rabbit");
             using var consumer = new ConsumerBuilder<Ignore, byte[]>(_consumerConfig)
                 // Note: All handlers are called on the main .Consume thread.
-                .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
-                .SetStatisticsHandler((_, json) => Console.WriteLine($"Statistics: {json}"))
+                .SetErrorHandler((_, e) =>  _logger.LogError($"Error: {e.Reason}"))
+                .SetStatisticsHandler((_, json) =>  _logger.LogInformation($"Statistics: {json}"))
                 .SetPartitionsAssignedHandler((c, partitions) =>
                 {
-                    Console.WriteLine($"Assigned partitions: [{string.Join(", ", partitions)}]");
+                    _logger.LogInformation($"Assigned partitions: [{string.Join(", ", partitions)}]");
                 })
                 .SetPartitionsRevokedHandler((c, partitions) =>
                 {
-                    Console.WriteLine($"Revoking assignment: [{string.Join(", ", partitions)}]");
+                    _logger.LogInformation($"Revoking assignment: [{string.Join(", ", partitions)}]");
                 })
                 .Build();
             

@@ -7,3 +7,5 @@ nuget Akka
 nuget System.Threading.Channels 
 nuget Confluent.Kafka
 nuget RabbitMQ.Client
+nuget Akka.Serialization.Hyperion
+nuget Akka.Logger.Serilog

@@ -2,3 +2,5 @@ Akka
 System.Threading.Channels 
 Confluent.Kafka
 RabbitMQ.Client
+Akka.Serialization.Hyperion
+Akka.Logger.Serilog
