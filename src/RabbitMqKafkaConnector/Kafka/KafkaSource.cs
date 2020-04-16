@@ -61,7 +61,6 @@ namespace RabbitMqKafkaConnector.Kafka
                     {
                         var cr = consumer.Consume(stoppingToken);
                         rabbitMq.Tell(new EventData(cr.Topic.TrimPrefix(prefixToBeTrimed), ByteString.FromBytes(cr.Message.Value)));
-                        Console.WriteLine($"Consumed message '{cr.Message.Key}' at: '{cr.TopicPartitionOffset}'.");
                     }
                     catch (ConsumeException e)
                     {
