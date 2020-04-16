@@ -28,7 +28,7 @@ namespace RabbitMqKafkaConnector.RabbitMq
     public class RabbitMqSink : ReceiveActor
     {
         private IModel _channel;
-        private IConnection _connection;
+        private readonly IConnection _connection;
         private readonly Configuration.Router _router;
         private ILoggingAdapter _logger = Context.GetLogger();
 

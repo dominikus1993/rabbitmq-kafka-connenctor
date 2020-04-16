@@ -54,14 +54,14 @@ namespace RabbitMqKafkaConnector.Kafka
             consumer.Subscribe(_kafkaSubscriptions.Select(x => x.From.TopicWithEnv).ToArray());
             try
             {
-                var prefixToBeTrimed = $"{KafkaConfig.EnvName}.";
+                var prefixToBeTrimmed = $"{KafkaConfig.EnvName}.";
                 await Task.Yield();
                 while (true)
                 {
                     try
                     {
                         var cr = consumer.Consume(stoppingToken);
-                        rabbitMq.Tell(new EventData(cr.Topic.TrimPrefix(prefixToBeTrimed),
+                        rabbitMq.Tell(new EventData(cr.Topic.TrimPrefix(prefixToBeTrimmed),
                             ByteString.FromBytes(cr.Message.Value)));
                     }
                     catch (ConsumeException e)

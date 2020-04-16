@@ -60,14 +60,14 @@ namespace RabbitMqKafkaConnector.Configuration
             return new Router(kafkaSinkRouting, rabbitSinkRouting);
         }
 
-        public KafkaConfig? GetKafkaConfig(string topic)
+        public KafkaConfig GetKafkaConfig(string topic)
         {
-            return _kafkaSinkRouting.TryGetValue(topic, out var cfg) ? cfg : null;
+            return _kafkaSinkRouting.TryGetValue(topic, out var cfg) ? cfg : new KafkaConfig() { Topic = "dead-letters" };
         }
 
-        public RabbitmqConfig? GetRabbitConfig(string topic)
+        public RabbitmqConfig GetRabbitConfig(string topic)
         {
-            return _rabbitmqSinkRouting.TryGetValue(topic, out var cfg) ? cfg : null;
+            return _rabbitmqSinkRouting.TryGetValue(topic, out var cfg) ? cfg : new RabbitmqConfig() {  Exchange = "dead-letters", Topic = "#" };
         }
     }
 }

@@ -23,16 +23,14 @@ namespace RabbitMqKafkaConnector.Kafka
 
     public class KafkaSink : ReceiveActor
     {
-        private readonly ProducerConfig _config;
         private readonly IProducer<Null, byte[]> _producer;
         private readonly Configuration.Router _router;
-        private ILoggingAdapter _logger = Context.GetLogger();
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         public KafkaSink(ProducerConfig config, Configuration.Router router)
         {
-            _config = config;
             _router = router;
-            _producer = new ProducerBuilder<Null, byte[]>(_config)
+            _producer = new ProducerBuilder<Null, byte[]>(config)
                 .SetErrorHandler((_, e) => _logger.Error($"Error: {e.Reason}"))
                 .SetStatisticsHandler((_, json) => _logger.Info($"Statistics: {json}"))
                 .Build();

@@ -14,9 +14,9 @@ namespace RabbitMqKafkaConnector.Infrastructure
 {
     public static class Logging
     {
-        public static IHostBuilder UseLogging(this IHostBuilder hostBuilder, string applicationName = null)
+        public static IHostBuilder UseLogging(this IHostBuilder hostBuilder, string? applicationName = null)
         {
-            string appName = applicationName ?? Assembly.GetExecutingAssembly().FullName;
+            var appName = applicationName ?? Assembly.GetExecutingAssembly().FullName;
             return hostBuilder.UseSerilog(((context, configuration) =>
             {
                 var serilogOptions = context.Configuration.GetSection("Serilog").Get<SerilogOptions>();

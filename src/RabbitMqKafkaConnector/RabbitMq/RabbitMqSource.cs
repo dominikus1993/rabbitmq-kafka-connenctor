@@ -18,8 +18,8 @@ namespace RabbitMqKafkaConnector.RabbitMq
 
     {
         private readonly RabbitMqSubscription[] _rabbitMqSubscriptions;
-        private IModel _channel;
-        private ActorSystem _actorSystem;
+        private readonly IModel _channel;
+        private readonly ActorSystem _actorSystem;
 
         public RabbitMqSource(IConnection connection, IOptions<ServiceConfig> config,
             ActorSystem actorSystem)
@@ -47,7 +47,7 @@ namespace RabbitMqKafkaConnector.RabbitMq
                 consumer: consumer);
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var kafka = _actorSystem.ActorSelection("/user/kafka");
 
@@ -56,7 +56,7 @@ namespace RabbitMqKafkaConnector.RabbitMq
                 CreateSubscription(subscription.Topic, subscription.From, kafka);
             }
 
-            await Task.Yield();
+            return Task.CompletedTask;
         }
     }
 }
