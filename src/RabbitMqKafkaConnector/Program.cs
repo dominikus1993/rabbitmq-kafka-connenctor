@@ -37,11 +37,11 @@ namespace RabbitMqKafkaConnector
                     services.Configure<ServiceConfig>(hostContext.Configuration.GetSection("Service"));
                     services.AddSingleton<Router>(sp => Router.Create(hostContext.Configuration.GetSection("Service").Get<ServiceConfig>()));
 
-                    services.AddSingleton<ProducerConfig>(x => new ProducerConfig {BootstrapServers = "localhost:9092"});
+                    services.AddSingleton<ProducerConfig>(x => new ProducerConfig {BootstrapServers = hostContext.Configuration.GetConnectionString("Kafka"),});
                     services.AddSingleton<ConsumerConfig>(x => new ConsumerConfig
                     { 
                         GroupId = "test-consumer-group",
-                        BootstrapServers = "localhost:9092",
+                        BootstrapServers = hostContext.Configuration.GetConnectionString("Kafka"),
                         AutoOffsetReset = AutoOffsetReset.Earliest
                     });
                     services.AddSingleton<ActorSystem>(sp =>

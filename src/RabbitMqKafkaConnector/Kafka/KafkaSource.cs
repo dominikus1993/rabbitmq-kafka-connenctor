@@ -23,7 +23,9 @@ namespace RabbitMqKafkaConnector.Kafka
         private readonly ConsumerConfig _consumerConfig;
         private readonly KafkaSubscription[] _kafkaSubscriptions;
         private ILogger<KafkaSource> _logger;
-        public KafkaSource(ActorSystem system, ConsumerConfig consumerConfig, IOptions<ServiceConfig> options, ILogger<KafkaSource> logger)
+
+        public KafkaSource(ActorSystem system, ConsumerConfig consumerConfig, IOptions<ServiceConfig> options,
+            ILogger<KafkaSource> logger)
         {
             _system = system;
             _consumerConfig = consumerConfig;
@@ -32,14 +34,13 @@ namespace RabbitMqKafkaConnector.Kafka
         }
 
 
-
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var rabbitMq = _system.ActorSelection("/user/rabbit");
             using var consumer = new ConsumerBuilder<Ignore, byte[]>(_consumerConfig)
                 // Note: All handlers are called on the main .Consume thread.
-                .SetErrorHandler((_, e) =>  _logger.LogError($"Error: {e.Reason}"))
-                .SetStatisticsHandler((_, json) =>  _logger.LogInformation($"Statistics: {json}"))
+                .SetErrorHandler((_, e) => _logger.LogError($"Error: {e.Reason}"))
+                .SetStatisticsHandler((_, json) => _logger.LogInformation($"Statistics: {json}"))
                 .SetPartitionsAssignedHandler((c, partitions) =>
                 {
                     _logger.LogInformation($"Assigned partitions: [{string.Join(", ", partitions)}]");
@@ -49,7 +50,7 @@ namespace RabbitMqKafkaConnector.Kafka
                     _logger.LogInformation($"Revoking assignment: [{string.Join(", ", partitions)}]");
                 })
                 .Build();
-            
+
             consumer.Subscribe(_kafkaSubscriptions.Select(x => x.From.TopicWithEnv).ToArray());
             try
             {
@@ -60,11 +61,12 @@ namespace RabbitMqKafkaConnector.Kafka
                     try
                     {
                         var cr = consumer.Consume(stoppingToken);
-                        rabbitMq.Tell(new EventData(cr.Topic.TrimPrefix(prefixToBeTrimed), ByteString.FromBytes(cr.Message.Value)));
+                        rabbitMq.Tell(new EventData(cr.Topic.TrimPrefix(prefixToBeTrimed),
+                            ByteString.FromBytes(cr.Message.Value)));
                     }
                     catch (ConsumeException e)
                     {
-                       _logger.LogError(e, $"Error occured: {e.Error.Reason}");
+                        _logger.LogError(e, $"Error occured: {e.Error.Reason}");
                     }
                 }
             }

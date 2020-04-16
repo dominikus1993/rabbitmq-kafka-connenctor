@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="\rust_expanded_macros\1kg4g1ok" t="IncludeRecursive" />
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x64\native\librdkafka.dll" t="Include" />
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x64\native\librdkafkacpp.dll" t="Include" />
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x64\native\libzstd.dll" t="Include" />
@@ -14,10 +13,10 @@
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x86\native\msvcp120.dll" t="Include" />
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x86\native\msvcr120.dll" t="Include" />
     <e p="C:\Users\domin\.nuget\packages\librdkafka.redist\1.4.0\runtimes\win-x86\native\zlib.dll" t="Include" />
-    <e p="C:\Users\domin\.Rider2019.3\config\consoles\db" t="IncludeRecursive" />
-    <e p="C:\Users\domin\.Rider2019.3\config\extensions" t="IncludeRecursive" />
-    <e p="C:\Users\domin\.Rider2019.3\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\domin\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_rabbitmq-kafka-connenctor.1654937557.00" t="ExcludeRecursive" />
+    <e p="C:\Users\domin\AppData\local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\domin\AppData\local\JetBrains\Rider2020.1\resharper-host\local\Transient\ReSharperHost\v201\SolutionCaches\_rabbitmq-kafka-connenctor.1654937557.00" t="ExcludeRecursive" />
+    <e p="C:\Users\domin\AppData\Roaming\JetBrains\Rider2020.1\consoles\db" t="IncludeRecursive" />
+    <e p="C:\Users\domin\AppData\Roaming\JetBrains\Rider2020.1\extensions" t="IncludeRecursive" />
     <e p="E:\rabbitmq-kafka-connenctor" t="IncludeFlat">
       <e p="packages" t="ExcludeRecursive" />
       <e p="rabbitmq-kafka-connenctor.sln" t="IncludeFlat" />
@@ -35,6 +34,7 @@
             <e p="SerilogOptions.cs" t="Include" />
             <e p="ServiceConfig.cs" t="Include" />
           </e>
+          <e p="Dockerfile" t="Include" />
           <e p="extensions" t="Include">
             <e p="StringExtensions.cs" t="Include" />
           </e>

@@ -1,6 +1,17 @@
 version: '3'
 
 services:
+  connector:
+    build:
+      context: .
+      dockerfile: src/RabbitMqKafkaConnector/Dockerfile
+    environment:
+      - ConnectionStrings__RabbitMq=amqp://guest:guest@rabbitmq:5672/
+      - ConnectionStrings__Kafka=kafka:9092
+    depends_on:
+      - rabbitmq
+      - kafka
+  
   zoo:
     image: zookeeper:3.4.9
     hostname: zoo1
