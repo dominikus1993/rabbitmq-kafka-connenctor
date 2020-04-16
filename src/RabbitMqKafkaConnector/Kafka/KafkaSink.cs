@@ -26,13 +26,12 @@ namespace RabbitMqKafkaConnector.Kafka
         private readonly ProducerConfig _config;
         private readonly IProducer<Null, byte[]> _producer;
         private readonly Configuration.Router _router;
-        private ILoggingAdapter _logger;
+        private ILoggingAdapter _logger = Context.GetLogger();
 
         public KafkaSink(ProducerConfig config, Configuration.Router router)
         {
             _config = config;
             _router = router;
-            _logger = Context.GetLogger();
             _producer = new ProducerBuilder<Null, byte[]>(_config)
                 .SetErrorHandler((_, e) => _logger.Error($"Error: {e.Reason}"))
                 .SetStatisticsHandler((_, json) => _logger.Info($"Statistics: {json}"))
@@ -45,15 +44,21 @@ namespace RabbitMqKafkaConnector.Kafka
             Receive<EventData>(msg =>
             {
                 var cfg = _router.GetKafkaConfig(msg.Topic);
-                _producer.Produce(cfg.TopicWithEnv, new Message<Null, byte[]>() {Value = msg.Body.ToArray()},
-                    report => Self.Tell(report));
+                _producer.ProduceAsync(cfg.TopicWithEnv, new Message<Null, byte[]>() {Value = msg.Body.ToArray()})
+                    .PipeTo(Self);
             });
 
-            Receive<DeliveryReport<Null, byte[]>>(msg => { _logger.Error(msg.Error.Reason); },
-                x => x.Error.IsError);
+            Receive<DeliveryResult<Null,byte[]>>(msg =>
+                {
+                    _logger.Info("Delivered {Msg}", msg);
+                });
+        }
+        
 
-            Receive<DeliveryReport<Null, byte[]>>(msg => { _logger.Info("Dostarczyłem"); },
-                x => !x.Error.IsError);
+        protected override void PostStop()
+        {
+            _producer.Flush();
+            base.PostStop();
         }
     }
 }

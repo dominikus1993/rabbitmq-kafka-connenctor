@@ -9,3 +9,21 @@ nuget Confluent.Kafka
 nuget RabbitMQ.Client
 nuget Akka.Serialization.Hyperion
 nuget Akka.Logger.Serilog
+nuget Microsoft.Extensions.Hosting
+
+nuget Serilog
+nuget Serilog.AspNetCore
+nuget Serilog.Enrichers.Demystify
+nuget Serilog.Enrichers.Environment
+nuget Serilog.Enrichers.Process
+nuget Serilog.Enrichers.Thread
+nuget Serilog.Exceptions
+nuget Serilog.Extensions.Hosting
+nuget Serilog.Extensions.Logging
+nuget Serilog.Formatting.Compact
+nuget Serilog.Sinks.Async
+nuget Serilog.Sinks.Console
+nuget Serilog.Sinks.Trace
+nuget Serilog.Formatting.Elasticsearch
+nuget Serilog.Sinks.Seq
+nuget Serilog.Enrichers.CorrelationId

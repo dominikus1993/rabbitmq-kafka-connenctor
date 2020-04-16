@@ -23,6 +23,7 @@
       <e p="rabbitmq-kafka-connenctor.sln" t="IncludeFlat" />
       <e p="src" t="Include">
         <e p="RabbitMqKafkaConnector" t="IncludeRecursive">
+          <e p="akka.hocon" t="Include" />
           <e p="appsettings.Development.json" t="Include" />
           <e p="appsettings.json" t="Include" />
           <e p="bin" t="ExcludeRecursive" />
@@ -30,10 +31,15 @@
             <e p="EventData.cs" t="Include" />
           </e>
           <e p="Configuration" t="Include">
+            <e p="SeqOptions.cs" t="Include" />
+            <e p="SerilogOptions.cs" t="Include" />
             <e p="ServiceConfig.cs" t="Include" />
           </e>
           <e p="extensions" t="Include">
             <e p="StringExtensions.cs" t="Include" />
+          </e>
+          <e p="Infrastructure" t="Include">
+            <e p="Logging.cs" t="Include" />
           </e>
           <e p="Kafka" t="Include">
             <e p="KafkaSink.cs" t="Include" />

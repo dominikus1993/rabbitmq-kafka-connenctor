@@ -1,0 +1,31 @@
+﻿akka {
+    stream {
+        debug-logging = off
+        debug {
+            fuzzing-mode = off
+        }
+    } 
+    loggers=["Akka.Logger.Serilog.SerilogLogger, Akka.Logger.Serilog"]
+    actor {
+        debug {
+            receive = off
+            autoreceive = off
+            lifecycle = off
+            event-stream = off
+            unhandled = off
+        }
+        serializers {
+            hyperion = "Akka.Serialization.HyperionSerializer, Akka.Serialization.Hyperion"
+        }
+        serialization-bindings {
+            "System.Object" = hyperion
+        }
+}
+phobos {
+    tracing {
+        provider-type = default
+    }
+}
+loglevel = WARNING
+stdout-loglevel = WARNING
+}
