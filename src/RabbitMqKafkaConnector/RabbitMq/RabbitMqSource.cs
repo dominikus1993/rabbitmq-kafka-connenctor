@@ -41,7 +41,7 @@ namespace RabbitMqKafkaConnector.RabbitMq
 
 
             var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (_, ea) => actor.Tell(new EventData(topic, ByteString.FromBytes(ea.Body)));
+            consumer.Received += (_, ea) => actor.Tell(new EventData(topic, ea.Body));
             _channel.BasicConsume(queue: queueName,
                 autoAck: true,
                 consumer: consumer);

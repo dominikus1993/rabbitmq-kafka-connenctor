@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Worker">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UserSecretsId>dotnet-RabbitMqKafkaConnector-57DBB1B0-9E8A-4E64-97FA-3A1058D3A776</UserSecretsId>
+    <TargetFramework>net5.0</TargetFramework>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
+    <UserSecretsId>dotnet-RabbitMqKafkaConnector-57DBB1B0-9E8A-4E64-97FA-3A1058D3A776</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="akka.hocon">

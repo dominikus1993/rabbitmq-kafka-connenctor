@@ -47,10 +47,7 @@ namespace RabbitMqKafkaConnector
                     services.AddSingleton<ActorSystem>(sp =>
                     {
                         var system = ActorSystem.Create("rabbitmq-kafka-connector", ConfigurationFactory.ParseString(File.ReadAllText("./akka.hocon")));
-
-                        var rabbit = system.ActorOf(Props
-                            .Create(() => new RabbitMqSink(sp.GetService<IConnection>(),
-                                sp.GetService<Router>())).WithRouter(new RoundRobinPool(4)), "rabbit");
+                        
                         var kafka = system.ActorOf(Props
                             .Create(() => new KafkaSink(sp.GetService<ProducerConfig>(), sp.GetService<Router>()))
                             .WithRouter(new RoundRobinPool(4)), "kafka");
@@ -58,6 +55,7 @@ namespace RabbitMqKafkaConnector
                     });
                     services.AddHostedService<RabbitMqSource>();
                     services.AddHostedService<KafkaSource>();
+                    services.AddHostedService<Producer>();
                 });
     }
 }
