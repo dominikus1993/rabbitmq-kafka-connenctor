@@ -3,28 +3,24 @@ source https://api.nuget.org/v3/index.json
 storage: none
 framework: net5.0
 
-nuget FSharp.Core
-nuget Argu 
 nuget LanguageExt.Core
 nuget System.Linq.Async
-nuget FSharp.Control.AsyncSeq
 nuget Open.ChannelExtensions
 nuget System.Text.Json
-nuget HtmlAgilityPack
 nuget Microsoft.Extensions.Hosting
-nuget Discord.Net.Webhook
 nuget Microsoft.Extensions.DependencyInjection.Abstractions
 nuget Microsoft.Extensions.Configuration.Abstractions
 nuget Microsoft.Extensions.Configuration
 nuget Microsoft.Extensions.Configuration.EnvironmentVariables
 nuget Microsoft.Extensions.Configuration.Json
 nuget Microsoft.Extensions.Configuration.UserSecrets
-nuget MongoDB.Driver.Core
-nuget MongoDB.Driver
-nuget TaskBuilder.fs
-nuget Saturn
-nuget Giraffe
-nuget FSharpx.Collections
+nuget System.Threading.Channels 
+nuget Confluent.Kafka
+nuget System.Linq.Async
+nuget Microsoft.Extensions.Configuration.Abstractions
+nuget Microsoft.Extensions.DependencyInjection.Abstractions
+nuget Microsoft.Extensions.Hosting.Abstractions
+nuget Microsoft.Extensions.Logging.Abstractions
 
 nuget Serilog.AspNetCore
 nuget Serilog.Enrichers.Environment
