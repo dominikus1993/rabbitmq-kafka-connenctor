@@ -1,8 +1,0 @@
-﻿System.Threading.Channels 
-Confluent.Kafka
-System.Linq.Async
-Microsoft.Extensions.Configuration.Abstractions
-Microsoft.Extensions.DependencyInjection.Abstractions
-Microsoft.Extensions.Logging.Abstractions
-Microsoft.Extensions.Hosting.Abstractions
-LanguageExt.Core
