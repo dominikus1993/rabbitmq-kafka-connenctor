@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
@@ -32,10 +33,11 @@ type RabbitMqClient struct {
 
 type RabbitMqMessageSubscriber struct {
 	Client        *RabbitMqClient
+	Logger        log.Logger
 	Subscriptions []RabbitMqSubscription
 }
 
-func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cfg RabbitMqSubscription) {
+func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cfg RabbitMqSubscription, wg *sync.WaitGroup) {
 	err := source.Client.Channel.ExchangeDeclare(
 		cfg.Exchange, // name
 		"topic",      // type
@@ -47,7 +49,7 @@ func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cf
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		source.Logger.WithError(err).Fatal("Error when trying exchange declare")
 	}
 
 	q, err := source.Client.Channel.QueueDeclare(
@@ -60,7 +62,7 @@ func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cf
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		source.Logger.WithError(err).Fatal("Error when trying queue declare")
 	}
 
 	err = source.Client.Channel.QueueBind(
@@ -72,7 +74,7 @@ func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cf
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		source.Logger.WithError(err).Fatal("Error when trying queue bind")
 	}
 
 	msgs, err := source.Client.Channel.Consume(
@@ -86,20 +88,32 @@ func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cf
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		source.Logger.WithError(err).Fatal("Error when trying queue bind")
 	}
 
-	go func(evtChan chan Message) {
+	go func(evtChan chan Message, wg *sync.WaitGroup) {
+		defer wg.Done()
 		for msg := range msgs {
 			evtChan <- Message{Body: msg.Body, Key: cfg.Topic}
 		}
-	}(ch)
+	}(ch, wg)
 }
 
 func (source *RabbitMqMessageSubscriber) Subscribe(ctx context.Context) chan Message {
-	for subscription := range source.Subscriptions {
-		source.declareSubscription()
+	stream := make(chan Message)
+	wait := &sync.WaitGroup{}
+
+	for _, subscription := range source.Subscriptions {
+		wait.Add(1)
+		source.declareSubscription(stream, subscription, wait)
 	}
+
+	go func(evtChan chan Message, wg *sync.WaitGroup) {
+		wg.Wait()
+		close(evtChan)
+	}(stream, wait)
+
+	return stream
 }
 
 type App struct {
