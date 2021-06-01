@@ -7,4 +7,5 @@ require (
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/streadway/amqp v1.0.0 // indirect
 	gopkg.in/confluentinc/confluent-kafka-go.v1 v1.7.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

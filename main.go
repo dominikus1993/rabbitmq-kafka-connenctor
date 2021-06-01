@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"rabbit-kafka-connector/infrastructure/env"
 	"sync"
 
 	log "github.com/sirupsen/logrus"
@@ -29,6 +30,18 @@ type MessageSubscriber interface {
 type RabbitMqClient struct {
 	Connection *amqp.Connection
 	Channel    *amqp.Channel
+}
+
+func NewRabbitMqClient(connStr string) (*RabbitMqClient, error) {
+	conn, err := amqp.Dial(connStr)
+	if err != nil {
+		return nil, err
+	}
+	ch, err := conn.Channel()
+	if err != nil {
+		return nil, err
+	}
+	return &RabbitMqClient{Connection: conn, Channel: ch}, nil
 }
 
 type RabbitMqMessageSubscriber struct {
@@ -129,6 +142,34 @@ func (app *App) subscribeAndPublishMessage(ctx context.Context, sub MessageSubsc
 	}
 }
 
+func StartRabbitToKafka(conf *config.Config) {
+	done := make(chan bool)
+	router := config.NewMessageRouter(*conf)
+
+	client, err := NewRabbitMqClient(env.GetEnvOrDefault("RabbitMq__Connection", "amqp://guest:guest@127.0.0.1:5672/"))
+	defer client.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	source := rabbitmq.NewRabbitMqSource(client, conf.RabbitToKafka)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	channel := source.Handle()
+
+	kafka := rkafka.NewKafkaProducer(rkafka.GetKafkaProducerConfig())
+	defer kafka.Close()
+
+	sink := rkafka.NewKafkaSink(kafka, router)
+
+	go sink.Start(channel)
+
+	<-done
+}
+
 func main() {
+
 	fmt.Println("xD")
 }
