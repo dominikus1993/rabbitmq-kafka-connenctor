@@ -12,6 +12,8 @@ import (
 
 type Topic = string
 
+type Subscriptions = []RabbitMqToKafkaSubscription
+
 type RabbitMqSubscription struct {
 	Exchange string
 	Queue    string

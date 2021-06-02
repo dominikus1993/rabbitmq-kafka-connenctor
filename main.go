@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"rabbit-kafka-connector/infrastructure/config"
 	"rabbit-kafka-connector/infrastructure/env"
 	"sync"
 
@@ -13,10 +14,6 @@ import (
 type Message struct {
 	Key  string
 	Body []byte
-}
-
-type RabbitMqSubscription struct {
-	Exchange, Queue, Topic string
 }
 
 type MessagePublisher interface {
@@ -44,55 +41,85 @@ func NewRabbitMqClient(connStr string) (*RabbitMqClient, error) {
 	return &RabbitMqClient{Connection: conn, Channel: ch}, nil
 }
 
-type RabbitMqMessageSubscriber struct {
-	Client        *RabbitMqClient
-	Logger        log.Logger
-	Subscriptions []RabbitMqSubscription
+func (client *RabbitMqClient) Close() error {
+	err := client.Channel.Close()
+	err = client.Connection.Close()
+	return err
 }
 
-func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cfg RabbitMqSubscription, wg *sync.WaitGroup) {
+type StdOutMesssagePublisher struct {
+}
+
+func (pub StdOutMesssagePublisher) Publish(ctx context.Context, msg Message) error {
+	log.WithField("Data", msg).Infoln("Message Received")
+	return nil
+}
+
+type Subscription struct {
+	RabbitMq config.RabbitMqSubscription
+	Topic    config.Topic
+}
+
+func NewSubscription(cfg config.RabbitMqToKafkaSubscription) Subscription {
+	return Subscription{Topic: cfg.Topic, RabbitMq: cfg.From}
+}
+
+func NewSubscriptions(cfg config.Subscriptions) []Subscription {
+	res := make([]Subscription, len(cfg))
+	for i, elem := range cfg {
+		res[i] = NewSubscription(elem)
+	}
+	return res
+}
+
+type RabbitMqMessageSubscriber struct {
+	Client        *RabbitMqClient
+	Subscriptions []Subscription
+}
+
+func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cfg Subscription, wg *sync.WaitGroup) {
 	err := source.Client.Channel.ExchangeDeclare(
-		cfg.Exchange, // name
-		"topic",      // type
-		true,         // durable
-		false,        // auto-deleted
-		false,        // internal
-		false,        // no-wait
-		nil,          // arguments
+		cfg.RabbitMq.Exchange, // name
+		"topic",               // type
+		true,                  // durable
+		false,                 // auto-deleted
+		false,                 // internal
+		false,                 // no-wait
+		nil,                   // arguments
 	)
 
 	if err != nil {
-		source.Logger.WithError(err).Fatal("Error when trying exchange declare")
+		log.WithError(err).Fatal("Error when trying exchange declare")
 	}
 
 	q, err := source.Client.Channel.QueueDeclare(
-		cfg.Queue, // name
-		true,      // durable
-		false,     // delete when usused
-		false,     // exclusive
-		false,     // no-wait
-		nil,       // arguments
+		cfg.RabbitMq.Queue, // name
+		true,               // durable
+		false,              // delete when usused
+		false,              // exclusive
+		false,              // no-wait
+		nil,                // arguments
 	)
 
 	if err != nil {
-		source.Logger.WithError(err).Fatal("Error when trying queue declare")
+		log.WithError(err).Fatal("Error when trying queue declare")
 	}
 
 	err = source.Client.Channel.QueueBind(
-		q.Name,       // queue name
-		cfg.Topic,    // routing key
-		cfg.Exchange, // exchange
+		q.Name,                // queue name
+		cfg.RabbitMq.Topic,    // routing key
+		cfg.RabbitMq.Exchange, // exchange
 		false,
 		nil,
 	)
 
 	if err != nil {
-		source.Logger.WithError(err).Fatal("Error when trying queue bind")
+		log.WithError(err).Fatal("Error when trying queue bind")
 	}
 
 	msgs, err := source.Client.Channel.Consume(
 		q.Name, // queue
-		cfg.Exchange+"-"+cfg.Queue+"-"+cfg.Topic, // consumer
+		cfg.RabbitMq.Exchange+"-"+cfg.RabbitMq.Queue+"-"+cfg.RabbitMq.Topic, // consumer
 		true,  // auto-ack
 		false, // exclusive
 		false, // no-local
@@ -101,7 +128,7 @@ func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cf
 	)
 
 	if err != nil {
-		source.Logger.WithError(err).Fatal("Error when trying queue bind")
+		log.WithError(err).Fatal("Error when trying queue bind")
 	}
 
 	go func(evtChan chan Message, wg *sync.WaitGroup) {
@@ -112,7 +139,7 @@ func (source *RabbitMqMessageSubscriber) declareSubscription(ch chan Message, cf
 	}(ch, wg)
 }
 
-func (source *RabbitMqMessageSubscriber) Subscribe(ctx context.Context) chan Message {
+func (source RabbitMqMessageSubscriber) Subscribe(ctx context.Context) chan Message {
 	stream := make(chan Message)
 	wait := &sync.WaitGroup{}
 
@@ -129,15 +156,20 @@ func (source *RabbitMqMessageSubscriber) Subscribe(ctx context.Context) chan Mes
 	return stream
 }
 
-type App struct {
-	logger log.Logger
+func NewRabbitMqSubscriber(client *RabbitMqClient, subscriptions config.Subscriptions) MessageSubscriber {
+	return RabbitMqMessageSubscriber{Client: client, Subscriptions: NewSubscriptions(subscriptions)}
 }
 
-func (app *App) subscribeAndPublishMessage(ctx context.Context, sub MessageSubscriber, pub MessagePublisher) {
-	for message := range sub.Subscribe(ctx) {
-		err := pub.Publish(ctx, message)
+type RabbitMqMessageProducer struct {
+	Subscriber MessageSubscriber
+	Publisher  MessagePublisher
+}
+
+func (app *RabbitMqMessageProducer) Execute(ctx context.Context) {
+	for message := range app.Subscriber.Subscribe(ctx) {
+		err := app.Publisher.Publish(ctx, message)
 		if err != nil {
-			app.logger.WithContext(ctx).WithError(err).Fatalln("Error when trying publish message")
+			log.WithContext(ctx).WithError(err).Fatalln("Error when trying publish message")
 		}
 	}
 }
@@ -152,19 +184,13 @@ func StartRabbitToKafka(conf *config.Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	source := rabbitmq.NewRabbitMqSource(client, conf.RabbitToKafka)
+	subscriber := NewRabbitMqSubscriber(client, conf.RabbitToKafka)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	channel := source.Handle()
 
-	kafka := rkafka.NewKafkaProducer(rkafka.GetKafkaProducerConfig())
-	defer kafka.Close()
-
-	sink := rkafka.NewKafkaSink(kafka, router)
-
-	go sink.Start(channel)
+	usecase := RabbitMqMessageProducer{Subscriber: subscriber}
 
 	<-done
 }
