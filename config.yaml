@@ -1,0 +1,8 @@
+rabbitmq-to-kafka: 
+    - topic:   test
+      from:
+        topic: "#"
+        queue: test
+        exchange: test
+      to: 
+        topic: test

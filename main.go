@@ -42,16 +42,19 @@ func NewRabbitMqClient(connStr string) (*RabbitMqClient, error) {
 }
 
 func (client *RabbitMqClient) Close() error {
-	err := client.Channel.Close()
-	err = client.Connection.Close()
-	return err
+	err1 := client.Channel.Close()
+	err2 := client.Connection.Close()
+	if err1 != nil || err2 != nil {
+		return fmt.Errorf("Channel Close Error %w; Client Connection Close Error %w", err1, err2)
+	}
+	return nil
 }
 
 type StdOutMesssagePublisher struct {
 }
 
 func (pub StdOutMesssagePublisher) Publish(ctx context.Context, msg Message) error {
-	log.WithField("Data", msg).Infoln("Message Received")
+	log.WithField("Data", string(msg.Body)).Infoln("Message Received")
 	return nil
 }
 
@@ -174,11 +177,15 @@ func (app *RabbitMqMessageProducer) Execute(ctx context.Context) {
 	}
 }
 
-func StartRabbitToKafka(conf *config.Config) {
-	done := make(chan bool)
-	router := config.NewMessageRouter(*conf)
-
-	client, err := NewRabbitMqClient(env.GetEnvOrDefault("RabbitMq__Connection", "amqp://guest:guest@127.0.0.1:5672/"))
+func StartRabbitToKafka() {
+	// router := config.NewMessageRouter(*conf)
+	log.Infoln("Start RabbitToKafka")
+	conf := config.GetConf()
+	ctx := context.TODO()
+	client, err := NewRabbitMqClient(env.GetEnvOrDefault("RabbitMq__Connection", "amqp://guest:guest@rabbitmq:5672/"))
+	if err != nil {
+		log.WithError(err).Fatalln("Error when trying connect to rabbitmq")
+	}
 	defer client.Close()
 
 	if err != nil {
@@ -189,13 +196,13 @@ func StartRabbitToKafka(conf *config.Config) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	publisher := StdOutMesssagePublisher{}
+	usecase := RabbitMqMessageProducer{Subscriber: subscriber, Publisher: publisher}
 
-	usecase := RabbitMqMessageProducer{Subscriber: subscriber}
-
-	<-done
+	usecase.Execute(ctx)
+	log.Infoln("Finish RabbitToKafka")
 }
 
 func main() {
-
-	fmt.Println("xD")
+	StartRabbitToKafka()
 }
