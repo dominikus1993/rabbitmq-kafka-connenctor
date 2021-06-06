@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"rabbit-kafka-connector/application/model"
 	"rabbit-kafka-connector/application/services"
 	"rabbit-kafka-connector/infrastructure/config"
 	"rabbit-kafka-connector/infrastructure/env"
@@ -11,21 +10,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type MessagePublisher interface {
-	Publish(ctx context.Context, msg model.Message) error
-}
-
-type StdOutMesssagePublisher struct {
-}
-
-func (pub StdOutMesssagePublisher) Publish(ctx context.Context, msg model.Message) error {
-	log.WithField("Data", string(msg.Body)).Infoln("Message Received")
-	return nil
-}
-
 type RabbitMqMessageProducer struct {
 	Subscriber services.MessageSubscriber
-	Publisher  MessagePublisher
+	Publisher  services.MessagePublisher
 }
 
 func (app *RabbitMqMessageProducer) Execute(ctx context.Context) {
@@ -56,7 +43,7 @@ func StartRabbitToKafka() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	publisher := StdOutMesssagePublisher{}
+	publisher := infra.StdOutMesssagePublisher{}
 	usecase := RabbitMqMessageProducer{Subscriber: subscriber, Publisher: publisher}
 
 	usecase.Execute(ctx)
