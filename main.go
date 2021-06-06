@@ -25,9 +25,9 @@ func (app *RabbitMqMessageProducer) Execute(ctx context.Context) {
 }
 
 func StartRabbitToKafka() {
-	// router := config.NewMessageRouter(*conf)
 	log.Infoln("Start RabbitToKafka")
 	conf := config.GetConf()
+	router := config.NewMessageRouter(*conf)
 	ctx := context.TODO()
 	client, err := infra.NewRabbitMqClient(env.GetEnvOrDefault("RabbitMq__Connection", "amqp://guest:guest@rabbitmq:5672/"))
 	if err != nil {
@@ -43,7 +43,8 @@ func StartRabbitToKafka() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	publisher := infra.StdOutMesssagePublisher{}
+	kafka := infra.NewKafkaProducer(infra.GetKafkaProducerConfig())
+	publisher := infra.NewKafkaSink(kafka, router)
 	usecase := RabbitMqMessageProducer{Subscriber: subscriber, Publisher: publisher}
 
 	usecase.Execute(ctx)
